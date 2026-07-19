@@ -11,3 +11,10 @@ Contributions by Siteboon AI B.V. prior to commit 004135ef were originally
 published under GPL-3.0 and are hereby relicensed to AGPL-3.0-or-later.
 Contributions by other authors prior to that commit remain under GPL-3.0
 and are incorporated into this work as permitted by GPL-3.0 Section 13.
+
+ATP downstream modifications by kanazawahere (2026):
+- configurable OpenCode SQLite database path for ATP-patched session storage;
+- trusted self-host mode that removes app-level login only when an independent
+  network perimeter (loopback plus tailnet-only Tailscale Serve) is enforced.
+
+Downstream source: https://github.com/kanazawahere/claudecodeui/tree/atp-stable

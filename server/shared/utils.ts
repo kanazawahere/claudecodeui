@@ -1063,6 +1063,13 @@ export function readJsonRecord(value: unknown): AnyRecord | null {
  * it as a deletable transcript path for an individual app session row.
  */
 export function getOpenCodeDatabasePath(): string {
+  const configuredPath = process.env.OPENCODE_DB_PATH?.trim();
+  if (configuredPath) {
+    if (!path.isAbsolute(configuredPath)) {
+      throw new Error('OPENCODE_DB_PATH must be an absolute path');
+    }
+    return path.normalize(configuredPath);
+  }
   return path.join(os.homedir(), '.local', 'share', 'opencode', 'opencode.db');
 }
 

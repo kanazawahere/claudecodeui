@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { userDb, appConfigDb } from '../modules/database/index.js';
-import { IS_PLATFORM } from '../constants/config.js';
+import { IS_PLATFORM, IS_TRUSTED_SELF_HOST } from '../constants/config.js';
 
 // Use env var if set, otherwise auto-generate a unique secret per installation
 const JWT_SECRET = process.env.JWT_SECRET || appConfigDb.getOrCreateJwtSecret();
@@ -21,8 +21,8 @@ const validateApiKey = (req, res, next) => {
 
 // JWT authentication middleware
 const authenticateToken = async (req, res, next) => {
-  // Platform mode:  use single database user
-  if (IS_PLATFORM) {
+  // Hosted platform and trusted self-host mode use the single database user.
+  if (IS_PLATFORM || IS_TRUSTED_SELF_HOST) {
     try {
       const user = userDb.getFirstUser();
       if (!user) {
@@ -90,8 +90,8 @@ const generateToken = (user) => {
 
 // WebSocket authentication function
 const authenticateWebSocket = (token) => {
-  // Platform mode: bypass token validation, return first user
-  if (IS_PLATFORM) {
+  // Hosted platform and trusted self-host mode bypass token validation.
+  if (IS_PLATFORM || IS_TRUSTED_SELF_HOST) {
     try {
       const user = userDb.getFirstUser();
       if (user) {

@@ -10,6 +10,7 @@ import { closeConnection, initializeDatabase, sessionsDb } from '@/modules/datab
 import { OpenCodeSessionSynchronizer } from '@/modules/providers/list/opencode/opencode-session-synchronizer.provider.js';
 import { OpenCodeSessionsProvider } from '@/modules/providers/list/opencode/opencode-sessions.provider.js';
 import { appendImagesInputTag } from '@/shared/image-attachments.js';
+import { getOpenCodeDatabasePath } from '@/shared/utils.js';
 
 const patchHomeDir = (nextHomeDir: string) => {
   const original = os.homedir;
@@ -245,6 +246,23 @@ const createOpenCodeDatabase = async (homeDir: string, workspacePath: string): P
     db.close();
   }
 };
+
+test('OpenCode database path accepts only an absolute OPENCODE_DB_PATH override', { concurrency: false }, () => {
+  const previousPath = process.env.OPENCODE_DB_PATH;
+  try {
+    process.env.OPENCODE_DB_PATH = '/var/lib/opencode/opencode-atp-patches.db';
+    assert.equal(getOpenCodeDatabasePath(), '/var/lib/opencode/opencode-atp-patches.db');
+
+    process.env.OPENCODE_DB_PATH = 'relative/opencode.db';
+    assert.throws(() => getOpenCodeDatabasePath(), /must be an absolute path/);
+  } finally {
+    if (previousPath === undefined) {
+      delete process.env.OPENCODE_DB_PATH;
+    } else {
+      process.env.OPENCODE_DB_PATH = previousPath;
+    }
+  }
+});
 
 test('OpenCode session synchronizer indexes sqlite sessions without deletable transcript paths', { concurrency: false }, async () => {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'opencode-session-sync-'));

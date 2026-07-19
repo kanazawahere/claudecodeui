@@ -46,7 +46,7 @@ export class OpenCodeSessionSynchronizer implements IProviderSessionSynchronizer
    * Handles watcher changes for opencode.db.
    */
   async synchronizeFile(filePath: string): Promise<string | null> {
-    if (path.basename(filePath) !== 'opencode.db') {
+    if (path.resolve(filePath) !== path.resolve(getOpenCodeDatabasePath())) {
       return null;
     }
 

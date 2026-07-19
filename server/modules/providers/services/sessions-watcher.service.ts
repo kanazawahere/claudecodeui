@@ -9,6 +9,7 @@ import { sessionSynchronizerService } from '@/modules/providers/services/session
 import { WS_OPEN_STATE, connectedClients } from '@/modules/websocket/index.js';
 import type { LLMProvider } from '@/shared/types.js';
 import { generateDisplayName } from '@/modules/projects/index.js';
+import { getOpenCodeDatabasePath } from '@/shared/utils.js';
 
 type WatcherEventType = 'add' | 'change';
 
@@ -27,7 +28,7 @@ const PROVIDER_WATCH_PATHS: Array<{ provider: LLMProvider; rootPath: string }> =
   },
   {
     provider: 'opencode',
-    rootPath: path.join(os.homedir(), '.local', 'share', 'opencode'),
+    rootPath: path.dirname(getOpenCodeDatabasePath()),
   },
 ];
 
@@ -68,7 +69,7 @@ let watcherRescheduleAfterRefresh = false;
  */
 function isWatcherTargetFile(provider: LLMProvider, filePath: string): boolean {
   if (provider === 'opencode') {
-    return path.basename(filePath) === 'opencode.db';
+    return path.resolve(filePath) === path.resolve(getOpenCodeDatabasePath());
   }
 
   return filePath.endsWith('.jsonl');

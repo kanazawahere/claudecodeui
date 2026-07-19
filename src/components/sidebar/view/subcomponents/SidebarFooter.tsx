@@ -1,10 +1,12 @@
 import { Settings, ArrowUpCircle, Bug, AlertTriangle } from 'lucide-react';
 import type { TFunction } from 'i18next';
-import { IS_PLATFORM } from '../../../../constants/config';
+import { IS_PLATFORM, IS_TRUSTED_SELF_HOST } from '../../../../constants/config';
 import type { ReleaseInfo } from '../../../../types/sharedTypes';
 
 const GITHUB_ISSUES_URL = 'https://github.com/siteboon/claudecodeui/issues/new';
-const GITHUB_REPO_URL = 'https://github.com/siteboon/claudecodeui';
+const GITHUB_REPO_URL = IS_TRUSTED_SELF_HOST
+  ? 'https://github.com/kanazawahere/claudecodeui/tree/atp-stable'
+  : 'https://github.com/siteboon/claudecodeui';
 
 const DISCORD_INVITE_URL = 'https://discord.gg/buxwujPNRE';
 

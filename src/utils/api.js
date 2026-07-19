@@ -1,4 +1,4 @@
-import { IS_PLATFORM } from "../constants/config";
+import { IS_PLATFORM, IS_TRUSTED_SELF_HOST } from "../constants/config";
 
 // Only accept a refreshed token that has this app's issued JWT shape
 // (three base64url segments). An attacker-injected/malformed header value
@@ -22,7 +22,7 @@ export const authenticatedFetch = (url, options = {}) => {
     defaultHeaders['Content-Type'] = 'application/json';
   }
 
-  if (!IS_PLATFORM && token) {
+  if (!IS_PLATFORM && !IS_TRUSTED_SELF_HOST && token) {
     defaultHeaders['Authorization'] = `Bearer ${token}`;
   }
 

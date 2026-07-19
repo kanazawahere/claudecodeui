@@ -5,6 +5,13 @@
 export const IS_PLATFORM = import.meta.env.VITE_IS_PLATFORM === 'true';
 
 /**
+ * ATP trusted self-host mode removes the app-level login prompt while retaining
+ * OSS/local behavior. It must only be used behind an independently trusted
+ * perimeter such as loopback + tailnet-only Tailscale Serve.
+ */
+export const IS_TRUSTED_SELF_HOST = import.meta.env.VITE_ATP_TRUSTED_SELF_HOST === 'true';
+
+/**
  * For empty shell instances where no project is provided,
  * we use a default project object to ensure the shell can still function.
  * This prevents errors related to missing project data.

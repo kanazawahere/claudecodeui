@@ -12,7 +12,7 @@ import { queryCodex } from '../openai-codex.js';
 import { spawnOpenCode } from '../opencode-cli.js';
 import { Octokit } from '@octokit/rest';
 import { providerModelsService } from '../modules/providers/services/provider-models.service.js';
-import { IS_PLATFORM } from '../constants/config.js';
+import { IS_PLATFORM, IS_TRUSTED_SELF_HOST } from '../constants/config.js';
 import { normalizeProjectPath } from '../shared/utils.js';
 
 const router = express.Router();
@@ -31,7 +31,7 @@ const router = express.Router();
 const validateExternalApiKey = (req, res, next) => {
   // Platform mode: Authentication is handled externally (e.g., by a proxy layer).
   // Trust the request and use the default user context.
-  if (IS_PLATFORM) {
+  if (IS_PLATFORM || IS_TRUSTED_SELF_HOST) {
     try {
       const user = userDb.getFirstUser();
       if (!user) {
