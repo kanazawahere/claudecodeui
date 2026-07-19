@@ -5,7 +5,7 @@ import type { ReleaseInfo } from '../../../../types/sharedTypes';
 
 const GITHUB_ISSUES_URL = 'https://github.com/siteboon/claudecodeui/issues/new';
 const GITHUB_REPO_URL = IS_TRUSTED_SELF_HOST
-  ? 'https://github.com/kanazawahere/claudecodeui/tree/atp-stable'
+  ? 'https://github.com/kanazawahere/claudecodeui/tree/a237350ec57861ace91091d3fda1d23e40a96f13'
   : 'https://github.com/siteboon/claudecodeui';
 
 const DISCORD_INVITE_URL = 'https://discord.gg/buxwujPNRE';
@@ -145,16 +145,16 @@ export default function SidebarFooter({
         </button>
       </div>
 
-      {/* Desktop version brand line (OSS mode only) */}
+      {/* Desktop version/source brand line (OSS mode only) */}
       {!IS_PLATFORM && (
         <div className="hidden px-3 py-2 text-center md:block">
           <a
-            href={GITHUB_REPO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={IS_TRUSTED_SELF_HOST ? '/source/' : GITHUB_REPO_URL}
+            target={IS_TRUSTED_SELF_HOST ? undefined : '_blank'}
+            rel={IS_TRUSTED_SELF_HOST ? undefined : 'noopener noreferrer'}
             className="text-[10px] text-muted-foreground/40 transition-colors hover:text-muted-foreground"
           >
-            CloudCLI v{currentVersion} – {t('branding.openSource')}
+            CloudCLI v{currentVersion} – {IS_TRUSTED_SELF_HOST ? 'Source (AGPL)' : t('branding.openSource')}
           </a>
         </div>
       )}
