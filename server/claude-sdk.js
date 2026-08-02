@@ -234,12 +234,25 @@ function mapCliOptionsToSDK(options = {}) {
 }
 
 /**
- * Adds a session to the active sessions map
+ * Adds a session to the active sessions map.
+ *
+ * A writer-swap storm (rapid reconnect/retry against the same sessionId, e.g.
+ * from a client-side retry loop or an API caller that resumes before the
+ * prior run finished) can call this twice for one sessionId while the first
+ * `queryInstance`'s `for-await` loop is still running. Overwriting the map
+ * entry without aborting the prior instance orphans its generator — the only
+ * reference to it is gone, but the loop keeps running with no client,
+ * pegging CPU/heap indefinitely (siteboon/claudecodeui#885).
  * @param {string} sessionId - Session identifier
  * @param {Object} queryInstance - SDK query instance
  * @param {Object} writer - WebSocket writer for reconnect support
  */
-function addSession(sessionId, queryInstance, writer = null) {
+async function addSession(sessionId, queryInstance, writer = null) {
+  if (isClaudeSDKSessionActive(sessionId)) {
+    console.log(`[addSession] Session ${sessionId} already active — aborting prior queryInstance before writer-swap`);
+    await abortClaudeSDKSession(sessionId);
+  }
+
   activeSessions.set(sessionId, {
     instance: queryInstance,
     startTime: Date.now(),
@@ -627,7 +640,7 @@ async function queryClaudeSDK(command, options = {}, ws) {
 
     // Track the query instance for abort capability
     if (capturedSessionId) {
-      addSession(capturedSessionId, queryInstance, ws);
+      await addSession(capturedSessionId, queryInstance, ws);
     }
 
     // Process streaming messages
@@ -637,7 +650,7 @@ async function queryClaudeSDK(command, options = {}, ws) {
       if (message.session_id && !capturedSessionId) {
 
         capturedSessionId = message.session_id;
-        addSession(capturedSessionId, queryInstance, ws);
+        await addSession(capturedSessionId, queryInstance, ws);
 
         // Set session ID on writer
         if (ws.setSessionId && typeof ws.setSessionId === 'function') {
